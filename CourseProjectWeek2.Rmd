@@ -1,0 +1,47 @@
+---
+title: "DevelopingDataProducts week2"
+author: "Matti Niemistö"
+date: "April 11, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Developing Data Products
+
+This is the course project of week 2
+Presenting a document in GitHub pages featuring map implemented with Leaflet.
+
+Date of submission: 11th April 2018
+```{r, echo=FALSE}
+library("leaflet")
+library(htmltools)
+library(htmlwidgets)
+cities <- data.frame(
+  City=c("Oulu", "Stockholm", "Helsinki", "Oslo", "Copenhagen"), 
+  Lat=c(65.01, 59.1946, 60.1015, 59.5450, 55.40),
+  Long=c(25.28, 18.47, 24.5615, 10.4419, 12.34),
+  Population=c(201124,923516, 642045, 658390, 602481),
+  Description=c("City of Oulu, <br />One of the High Tech Centers in Finland",
+                "City of Stockholm, <br />Capitol of Sweden", 
+                "City of Helsinki, <br />Capitol of Finland", 
+                "City of Oslo, <br />Capitol of Norway",
+                "City of Copenhagen, <br />Capitol of Denmark"))
+
+m <- leaflet(cities, options = leafletOptions(minZoom = 0, maxZoom = 18,)) %>%
+  setView(lng = 25.28, lat = 65.01, zoom = 4) %>% addTiles() %>% 
+  addCircles(lng = ~Long, lat = ~Lat, weight = 1,
+    radius = ~sqrt(Population) * 100, popup = ~Description) %>%
+  addMarkers(lng=25.464523, lat=65.013651, popup="The Marketplace of City of Oulu") %>%
+  addEasyButton(easyButton(
+    icon="fa-globe", title="Zoom to Level 3",
+    onClick=JS("function(btn, map){ map.setZoom(3); }"))) %>%
+  addEasyButton(easyButton(
+    icon="fa-crosshairs", title="Locate Me",
+    onClick=JS("function(btn, map){ map.locate({setView: true}); }")))
+m
+```
+
+

@@ -1,0 +1,79 @@
+---
+title: "Developing Data Products week 3 course project"
+author: "Matti Niemistö"
+date: "April 14, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown and Plotly, presented in GitHub Pages
+
+This is the course project for week 3 of Developing Data Products course on the Data Science Spesialization on Coursera.
+
+
+## Unemployment in Finland between 1991 and 2017
+
+```{r,message=FALSE,echo=FALSE}
+library(ggplot2)
+library(plotly)
+df <- read.csv("unemployment_in_finland.csv", sep = ";", stringsAsFactors = FALSE)
+colnames(df) <- c("Variable", 2017:1991)
+final_df <- as.data.frame(t(df))
+colnames(final_df) <- c("Vacancies_end_of_Month", "All_Vacancies", "New_Vacancies", "Vacancies_filled", "Vacancies_filled_with_jobseekers_at_the_Employment_Service", "All_Unemployed", "Unemployed_Men", "Unemployed_Women")
+final_df <- final_df[2:28,]
+final_df$Year <- 2017:1991
+indx <- sapply(final_df, is.factor)
+final_df[indx] <- lapply(final_df[indx], function(x) as.numeric(as.character(x)))
+final_df[,9] <- as.Date(as.character(final_df[,9]), format = "%Y")
+m <- list(
+  l = 50,
+  r = 50,
+  b = 100,
+  t = 100,
+  pad = 4
+)
+p <- plot_ly(final_df, x = ~Year, width = 1000, height = 700) %>%
+    add_lines(y = ~All_Vacancies, name = "All Vacant Positions") %>%
+    add_lines(y = ~Vacancies_end_of_Month, name = "Vacant Positions End of the Month")  %>%
+    add_lines(y = ~New_Vacancies, name = "New Open positions")  %>%
+    add_lines(y = ~Vacancies_filled, name = "Open Positions filled")  %>%
+    add_lines(y = ~Vacancies_filled_with_jobseekers_at_the_Employment_Service, name = "Filled positions through the Employment Service")  %>%
+    add_lines(y = ~All_Unemployed, name = "All Unemployed")  %>%
+    add_lines(y = ~Unemployed_Men, name = "Unemployed Men")  %>%
+    add_lines(y = ~Unemployed_Women, name = "Unemployed Women")  %>%
+    layout(
+        title = "Job Vacancies and unemployement in Finland 1991 - 2017",
+        legend = list(x = 100, y = 0.5),
+        margin = m,
+        xaxis = list(
+            rangeselector = list(
+                buttons = list(
+                    list(
+                        count = 3,
+                        label = "3 years",
+                        step = "year",
+                        stepmode = "backward"),
+                    list(
+                        count = 6,
+                        label = "6 years",
+                        step = "year",
+                        stepmode = "backward"),
+                    list(
+                        count = 12,
+                        label = "12 years",
+                        step = "year",
+                        stepmode = "backward"),
+                    list(step = "all"))),
+            
+            rangeslider = list(type = "date")),
+        
+        yaxis = list(title = "Vacancies and Unemployment"))
+p
+
+
+
+```
+
